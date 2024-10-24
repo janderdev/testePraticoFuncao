@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using FI.AtividadeEntrevista.DML;
+using System.Text.RegularExpressions;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -38,9 +39,26 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
-                
+                string CPFSomenteDigitos = Regex.Replace(model.CPF, @"\D", "");
+
+                bool CPFValido = bo.VerificarCPFValido(CPFSomenteDigitos);
+
+                if (!CPFValido)
+                {
+                    Response.StatusCode = 400;
+                    return Json("Digite um CPF válido.");
+                }
+
+                bool CPFExistente = bo.VerificarExistencia(CPFSomenteDigitos);
+
+                if (CPFExistente)
+                {
+                    Response.StatusCode = 400;
+                    return Json("O CPF já está cadastrado.");
+                }
+
                 model.Id = bo.Incluir(new Cliente()
-                {                    
+                {
                     CEP = model.CEP,
                     Cidade = model.Cidade,
                     Email = model.Email,
@@ -50,10 +68,9 @@ namespace WebAtividadeEntrevista.Controllers
                     Nome = model.Nome,
                     Sobrenome = model.Sobrenome,
                     Telefone = model.Telefone,
-                    CPF = model.CPF,
+                    CPF = CPFSomenteDigitos,
                 });
 
-           
                 return Json("Cadastro efetuado com sucesso");
             }
         }
@@ -74,6 +91,24 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
+                string CPFSomenteDigitos = Regex.Replace(model.CPF, @"\D", "");
+
+                bool CPFValido = bo.VerificarCPFValido(CPFSomenteDigitos);
+
+                if (!CPFValido)
+                {
+                    Response.StatusCode = 400;
+                    return Json("Digite um CPF válido.");
+                }
+
+                bool CPFExistente = bo.VerificarExistencia(CPFSomenteDigitos);
+                
+                if (CPFExistente)
+                {
+                    Response.StatusCode = 400;
+                    return Json("CPF já cadastrado.");
+                }
+
                 bo.Alterar(new Cliente()
                 {
                     Id = model.Id,
@@ -86,9 +121,9 @@ namespace WebAtividadeEntrevista.Controllers
                     Nome = model.Nome,
                     Sobrenome = model.Sobrenome,
                     Telefone = model.Telefone,
-                    CPF = model.CPF
+                    CPF = CPFSomenteDigitos
                 });
-                               
+
                 return Json("Cadastro alterado com sucesso");
             }
         }
@@ -96,8 +131,13 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpGet]
         public ActionResult Alterar(long id)
         {
+
+
+
             BoCliente bo = new BoCliente();
+
             Cliente cliente = bo.Consultar(id);
+
             Models.ClienteModel model = null;
 
             if (cliente != null)

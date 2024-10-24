@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FI.AtividadeEntrevista.DAL
 {
@@ -61,6 +62,42 @@ namespace FI.AtividadeEntrevista.DAL
             DataSet ds = base.Consultar("FI_SP_VerificaCliente", parametros);
 
             return ds.Tables[0].Rows.Count > 0;
+        }
+
+        internal bool VerificarCPFValido(string CPF)
+        {
+            CPF = Regex.Replace(CPF, @"\D", "");
+
+            if (CPF.Length != 11)
+                return false;
+
+            if (CPF.Distinct().Count() == 1)
+                return false;
+
+            int soma = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                soma += int.Parse(CPF[i].ToString()) * (10 - i);
+            }
+
+            int primeiroDigito = (soma * 10) % 11;
+            if (primeiroDigito == 10 || primeiroDigito == 11)
+                primeiroDigito = 0;
+
+            if (primeiroDigito != int.Parse(CPF[9].ToString()))
+                return false;
+
+            soma = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                soma += int.Parse(CPF[i].ToString()) * (11 - i);
+            }
+
+            int segundoDigito = (soma * 10) % 11;
+            if (segundoDigito == 10 || segundoDigito == 11)
+                segundoDigito = 0;
+
+            return segundoDigito == int.Parse(CPF[10].ToString());
         }
 
         internal List<Cliente> Pesquisa(int iniciarEm, int quantidade, string campoOrdenacao, bool crescente, out int qtd)

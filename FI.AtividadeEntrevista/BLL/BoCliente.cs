@@ -78,5 +78,16 @@ namespace FI.AtividadeEntrevista.BLL
             DAL.DaoCliente cli = new DAL.DaoCliente();
             return cli.VerificarExistencia(CPF);
         }
+
+        /// <summary>
+        /// Verifica se o CPF é valido de acordo com o cálculo padrão do dígito verificador
+        /// </summary>
+        /// <param name="CPF"></param>
+        /// <returns></returns>
+        public bool VerificarCPFValido(string CPF)
+        {
+            DAL.DaoCliente cli = new DAL.DaoCliente();
+            return cli.VerificarCPFValido(CPF);
+        }
     }
 }

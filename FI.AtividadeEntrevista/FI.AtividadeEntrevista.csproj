@@ -55,5 +55,8 @@
     <Content Include="DAL\Clientes\Procedures\FI_SP_IncCliente.sql" />
     <Content Include="DAL\Clientes\Procedures\FI_SP_PesqCliente.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DAL\Beneficiarios\Procedures\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
